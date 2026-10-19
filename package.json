@@ -8,9 +8,11 @@
   },
   "dependencies": {
     "@hono/node-server": "^2.1.3",
+    "@hono/zod-validator": "^0.9.1",
     "@neondatabase/serverless": "github:neondatabase/serverless",
     "@types/cors": "^2.8.19",
     "@types/dotenv": "^6.1.1",
+    "axios": "^1.20.0",
     "better-auth": "^1.7.10",
     "cors": "^2.8.6",
     "dotenv": "^18.0.8",
@@ -19,7 +21,8 @@
     "hono": "^4.13.13",
     "kysely": "^0.29.7",
     "kysely-neon": "^3.0.0",
-    "pg": "^8.23.1"
+    "pg": "^8.23.1",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",

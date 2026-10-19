@@ -7,8 +7,9 @@ import { serve } from '@hono/node-server'
 import { desc } from 'drizzle-orm'
 import { auth } from './auth.js'
 import { db } from './db.js'
-import { contactMessages } from './schema/schema.js'
-
+import { contactMessages ,reports} from './schema/schema.js'
+import { zValidator } from '@hono/zod-validator'
+import { z } from 'zod'
 const app = new Hono()
 
 app.use(secureHeaders())
@@ -49,7 +50,30 @@ app.post('/api/contact', async (c) => {
 
   return c.json({ ok: true, id: row.id }, 201)
 })
+const reportSchema = z.object({
+  title: z.string().min(1).max(255),
+  content: z.string().min(1),
+})
 
+// Private: only you can create rep orts
+app.post(
+  '/api/reports',
+  bearerAuth({ token: process.env.ADMIN_API_KEY! }),
+  zValidator('json', reportSchema),
+  async (c) => {
+    const data = c.req.valid('json') // typed: { title: string; content: string }
+
+    const [row] = await db.insert(reports).values(data).returning()
+
+    return c.json(row, 201)
+  },
+)
+
+// Public: list reports
+app.get('/api/reports', async (c) => {
+  const rows = await db.select().from(reports).orderBy(desc(reports.createdAt))
+  return c.json(rows)
+})
 // Private: only you, with the secret key
 app.get(
   '/api/messages',

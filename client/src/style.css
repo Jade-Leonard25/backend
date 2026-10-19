@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  /* surfaces */
+  --color-background:            oklch(1 0 0);
+  --color-foreground:            oklch(0.145 0 0);
+  --color-card:                  oklch(1 0 0);
+  --color-card-foreground:       oklch(0.145 0 0);
+  --color-muted:                 oklch(0.97 0 0);
+  --color-muted-foreground:      oklch(0.556 0 0);
+  --color-border:                oklch(0.922 0 0);
+  --color-input:                 oklch(0.922 0 0);
+  --color-ring:                  oklch(0.708 0 0);
+
+  /* brand / interaction */
+  --color-primary:               oklch(0.205 0 0);
+  --color-primary-foreground:    oklch(0.985 0 0);
+  --color-secondary:             oklch(0.97 0 0);
+  --color-secondary-foreground:  oklch(0.205 0 0);
+  --color-accent:                oklch(0.97 0 0);
+  --color-accent-foreground:     oklch(0.205 0 0);
+  --color-destructive:           oklch(0.577 0.245 27.325);
+  --color-destructive-foreground:oklch(0.985 0 0);
+
+  /* 🆕 radius scale — makes rounded-sm/md/lg/xl shadcn-shaped */
+  --radius-sm: calc(var(--radius) - 4px);   /* 6px  */
+  --radius-md: calc(var(--radius) - 2px);   /* 8px  */
+  --radius-lg: var(--radius);               /* 10px */
+  --radius-xl: calc(var(--radius) + 4px);   /* 14px */
+}
+
+/* base radius variable used by the scale above */
+:root {
+  --background: 0 30% 3%;
+  --foreground: 0 0% 97%;
+  --card: 0 20% 6%;
+  --card-foreground: 0 0% 97%;
+  --primary: 0 72% 51%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 10% 14%;
+  --secondary-foreground: 0 0% 97%;
+  --muted: 0 10% 14%;
+  --muted-foreground: 0 5% 72%;
+  --accent: 0 15% 16%;
+  --accent-foreground: 0 0% 97%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 100% / 0.12;
+  --input: 0 0% 100% / 0.15;
+  --ring: 0 72% 51%;
+}
+
+.dark {
+  --color-background:            oklch(0.145 0 0);
+  --color-foreground:            oklch(0.985 0 0);
+  --color-card:                  oklch(0.205 0 0);
+  --color-card-foreground:       oklch(0.985 0 0);
+  --color-muted:                 oklch(0.269 0 0);
+  --color-muted-foreground:      oklch(0.708 0 0);
+  --color-border:                oklch(1 0 0 / 10%);
+  --color-input:                 oklch(1 0 0 / 15%);
+  --color-ring:                  oklch(0.556 0 0);
+  --color-primary:               oklch(0.985 0 0);
+  --color-primary-foreground:    oklch(0.205 0 0);
+  --color-secondary:             oklch(0.269 0 0);
+  --color-secondary-foreground:  oklch(0.985 0 0);
+  --color-accent:                oklch(0.269 0 0);
+  --color-accent-foreground:     oklch(0.985 0 0);
+  --color-destructive:           oklch(0.704 0.191 22.216);
+  --color-destructive-foreground:oklch(0.985 0 0);
+}
+
+/* 🔑 makes `border` (no color) use your token instead of currentColor */
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+}
