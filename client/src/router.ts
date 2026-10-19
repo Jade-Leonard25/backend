@@ -9,6 +9,6 @@ const routes = [
 ]
 
 export const router = createRouter({
-  history: createWebHistory(), // 👈 Use this for standard SPAs
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes
 })
