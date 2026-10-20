@@ -4,78 +4,8 @@ import ThreeBackground from "./components/ThreeBackground.vue";
 import Card from "./components/Card.vue";
 import Button from "./components/Button.vue";
 import FloatingLogos from "./components/FloatingLogos.vue";
-import ThreeDrawer from "./components/ThreeDrawer.vue";
-import axios from "axios";
-import { z } from "zod";
+
 import { onBeforeUnmount, onMounted, ref, type CSSProperties, type Directive } from "vue";
-const isDrawerOpen = ref(false);
-// 1. Define the Reactive Form State
-const form = ref({
-  fullName: "",
-  email: "",
-  companyName: "",
-  subject: "",
-  message: "",
-});
-const isSubmitting = ref(false);
-const submitMessage = ref("");
-
-// 2. Zod schema (matches the backend)
-const sendDataSchema = z.object({
-  fullName: z.string().min(1, "Required field to fill"),
-  email: z.string().email("Invalid email"),
-  companyName: z.string().min(1, "Required field to fill"),
-  subject: z.string().min(1, "Required field to fill"),
-  message: z.string().min(1, "Required field to fill"),
-});
-// 3. API URL. Change 4000 to the port your backend prints on startup,
-// or set VITE_API_URL=http://localhost:PORT/api/contact in your frontend .env
-const apiData = import.meta.env.VITE_API_URL;
-const apiKey =  import.meta.env.VITE_API_KEY;
-// 4. The Submit Function
-const handleSendChat = async () => {
-  console.log("submitting to", apiData, form.value);
-  try {
-    isSubmitting.value = true;
-    submitMessage.value = "";
-
-    // Validate with Zod before sending
-    const validatedData = sendDataSchema.parse(form.value);
-
-    // Send to Hono Backend
-    const response = await axios.post(apiData, validatedData,{
-    headers:{
-         Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-    }
-    });
-
-    if (response.status === 201) {
-      submitMessage.value = "Message sent successfully!";
-      // Reset form
-      form.value = { fullName: "", email: "", companyName: "", subject: "", message: "" };
-
-      // Close drawer after 2 seconds
-      setTimeout(() => {
-        isDrawerOpen.value = false;
-        submitMessage.value = "";
-      }, 2000);
-    }
-  } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      submitMessage.value = error.issues[0].message; // Show first Zod error
-    } else {
-      submitMessage.value = "Failed to send message. Please try again.";
-      console.error(error);
-    }
-  } finally {
-    isSubmitting.value = false;
-  }
-};
-
-const openDrawer = () => {
-  isDrawerOpen.value = true;
-};
 
 // Dark red/black palette, applied on the root element below.
 const palette: Record<string, string> = {
@@ -239,7 +169,7 @@ const contactLinks = [
     label: "Email",
     text: "Send email",
     href: "/send-email",
-    external: false,
+    external: true,
     iconPath:
       "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
   },
@@ -256,31 +186,22 @@ const contactLinks = [
 
 <template>
   <div :style="theme" class="relative min-h-screen bg-background text-foreground overflow-x-hidden">
-    <div
-      ref="progress"
-      class="fixed inset-x-0 top-0 z-[60] h-0.5 origin-left bg-primary"
-      style="transform: scaleX(0)"
-      aria-hidden="true"
-    />
+    <div ref="progress" class="fixed inset-x-0 top-0 z-[60] h-0.5 origin-left bg-primary" style="transform: scaleX(0)"
+      aria-hidden="true" />
 
     <CursorGlow />
     <ThreeBackground />
     <FloatingLogos />
     <!-- Subtle grid overlay -->
-    <div
-      class="fixed inset-0 pointer-events-none z-[1]"
-      style="
+    <div class="fixed inset-0 pointer-events-none z-[1]" style="
         background-image:
           linear-gradient(rgba(220, 38, 38, 0.035) 1px, transparent 1px),
           linear-gradient(90deg, rgba(220, 38, 38, 0.035) 1px, transparent 1px);
         background-size: 80px 80px;
-      "
-    />
+      " />
 
     <!-- NAV -->
-    <nav
-      class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-background/70 border-b border-border"
-    >
+    <nav class="fixed top-0 inset-x-0 z-50 backdrop-blur-md bg-background/70 border-b border-border">
       <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         <a href="#" class="text-lg font-bold tracking-tight">
           jade<span class="text-primary">.</span>
@@ -306,18 +227,12 @@ const contactLinks = [
             </span>
           </div>
 
-          <h1
-            v-reveal="100"
-            class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-[0.95] mb-6"
-          >
+          <h1 v-reveal="100" class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter leading-[0.95] mb-6">
             Jade Leonard<br />
             <span class="text-primary">Miano Alvez</span>
           </h1>
 
-          <p
-            v-reveal="220"
-            class="text-lg md:text-xl text-muted-foreground max-w-2xl mb-10 leading-relaxed"
-          >
+          <p v-reveal="220" class="text-lg md:text-xl text-muted-foreground max-w-2xl mb-10 leading-relaxed">
             Building <span class="text-foreground">performant</span>,
             <span class="text-foreground">accessible</span>, and
             <span class="text-foreground">beautiful</span> web experiences. Specialized in Vue,
@@ -328,22 +243,11 @@ const contactLinks = [
             <Button as="a" href="#work" size="lg" class="shadow-lg shadow-primary/20" :crack="true">
               View Work
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M17 8l4 4m0 0l-4 4m4-4H3"
-                />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </Button>
-            <Button
-              as="a"
-              href="#contact"
-              variant="outline"
-              size="lg"
-              :crack="true"
-              class="border-border hover:border-primary/50 hover:bg-primary/5 hover:text-foreground"
-            >
+            <Button as="a" href="#contact" variant="outline" size="lg" :crack="true"
+              class="border-border hover:border-primary/50 hover:bg-primary/5 hover:text-foreground">
               Get in touch
             </Button>
           </div>
@@ -351,8 +255,7 @@ const contactLinks = [
       </div>
 
       <div
-        class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground text-xs"
-      >
+        class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground text-xs">
         <span>Scroll</span>
         <div class="w-px h-8 bg-gradient-to-b from-primary to-transparent" />
       </div>
@@ -371,20 +274,13 @@ const contactLinks = [
             Turning ideas into <span class="text-primary">interfaces</span> people love to use.
           </h2>
 
-          <div
-            v-reveal="100"
-            class="grid md:grid-cols-2 gap-8 text-muted-foreground leading-relaxed"
-          >
+          <div v-reveal="100" class="grid md:grid-cols-2 gap-8 text-muted-foreground leading-relaxed">
             <p>
               I'm a frontend developer based in the Philippines, focused on crafting polished,
               production-ready web applications. I care about the details most people miss — loading
               states, keyboard navigation, the exact 60fps curve of a transition. You can check my
-              <a
-                href="https://github.com/Jade-Leonard25"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="font-bold text-gray-200 hover:text-red-400 underline underline-offset-4 decoration-gray-500 hover:decoration-red-400 transition-colors duration-300"
-              >
+              <a href="https://github.com/Jade-Leonard25" target="_blank" rel="noopener noreferrer"
+                class="font-bold text-gray-200 hover:text-red-400 underline underline-offset-4 decoration-gray-500 hover:decoration-red-400 transition-colors duration-300">
                 GitHub
               </a>
               to see some of my projects.
@@ -428,13 +324,8 @@ const contactLinks = [
           </h2>
 
           <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            <Card
-              v-for="(skill, i) in skills"
-              v-reveal="(i % 3) * 80"
-              :key="skill.name"
-              size="sm"
-              class="gap-2 shadow-none transition-all hover:border-primary/40 hover:bg-primary/[0.03]"
-            >
+            <Card v-for="(skill, i) in skills" v-reveal="(i % 3) * 80" :key="skill.name" size="sm"
+              class="gap-2 shadow-none transition-all hover:border-primary/40 hover:bg-primary/[0.03]">
               <template #header>
                 <div class="text-2xl">{{ skill.icon }}</div>
                 <div class="font-medium">{{ skill.name }}</div>
@@ -460,32 +351,18 @@ const contactLinks = [
           </h2>
 
           <div class="grid md:grid-cols-2 gap-4">
-            <a
-              v-for="(project, i) in projects"
-              v-reveal="(i % 2) * 120"
-              :key="project.title"
-              :href="project.link"
-              class="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
+            <a v-for="(project, i) in projects" v-reveal="(i % 2) * 120" :key="project.title" :href="project.link"
+              class="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <Card
                 class="h-full shadow-none transition-all group-hover:border-primary/40 group-hover:bg-primary/[0.02]"
-                footer-class="flex-wrap gap-1.5"
-              >
+                footer-class="flex-wrap gap-1.5">
                 <template #header>
                   <div class="flex items-start justify-between">
                     <span class="text-xs text-primary font-mono">{{ project.year }}</span>
                     <svg
                       class="w-5 h-5 text-muted-foreground transition-all group-hover:text-primary group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        :d="arrowPath"
-                      />
+                      fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="arrowPath" />
                     </svg>
                   </div>
                   <h3 class="text-xl font-bold transition group-hover:text-primary">
@@ -498,11 +375,8 @@ const contactLinks = [
                 </p>
 
                 <template #footer>
-                  <span
-                    v-for="tag in project.tags"
-                    :key="tag"
-                    class="text-[11px] px-2 py-0.5 bg-muted rounded text-muted-foreground"
-                  >
+                  <span v-for="tag in project.tags" :key="tag"
+                    class="text-[11px] px-2 py-0.5 bg-muted rounded text-muted-foreground">
                     {{ tag }}
                   </span>
                 </template>
@@ -530,34 +404,20 @@ const contactLinks = [
             to you within 24 hours.
           </p>
 
-          <component
-            :is="link.external ? 'a' : 'button'"
-            type="button"
-            v-for="(link, i) in contactLinks"
-            v-reveal="i * 100"
-            :key="link.label"
-            :href="link.external ? link.href : undefined"
-            :target="link.external ? '_blank' : undefined"
-            :rel="link.external ? 'noopener' : undefined"
-            @click="link.external ? null : openDrawer()"
-            class="group block w-full text-left rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
-          >
-            <Card
-              size="sm"
-              class="gap-1.5 shadow-none transition-all group-hover:border-primary/50 group-hover:bg-primary/5 h-full"
-            >
+          <component :is="link.external ? 'a' : 'button'" type="button" v-for="(link, i) in contactLinks"
+            v-reveal="i * 100" :key="link.label" :href="link.external ? link.href : undefined"
+            :target="link.external ? '_blank' : undefined" :rel="link.external ? 'noopener' : undefined"
+            @click="link.external ? link.href : undefined"
+            class="group block w-full text-left rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer">
+            <Card size="sm"
+              class="gap-1.5 shadow-none transition-all group-hover:border-primary/50 group-hover:bg-primary/5 h-full">
               <div class="text-xs text-muted-foreground uppercase tracking-widest">
                 {{ link.label }}
               </div>
               <div class="font-medium flex items-center gap-2 transition group-hover:text-primary">
                 {{ link.text }}
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    :d="link.iconPath"
-                  />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="link.iconPath" />
                 </svg>
               </div>
             </Card>
@@ -569,8 +429,7 @@ const contactLinks = [
     <!-- FOOTER -->
     <footer class="relative z-10 border-t border-border py-8 px-6">
       <div
-        class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground"
-      >
+        class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
         <div>© 2026 Jade Leonard Miano Alvez. All rights reserved.</div>
         <div class="flex items-center gap-2 font-mono text-xs">
           <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -580,89 +439,7 @@ const contactLinks = [
     </footer>
   </div>
 
-  <!-- THREE.JS CONTACT DRAWER -->
-  <ThreeDrawer
-    :open="isDrawerOpen"
-    @update:open="isDrawerOpen = $event"
-    title="Send a Message"
-    description="Available for freelance work through Fiverr and Upwork. Send a message and I'll get back to you within 24 hours."
-  >
-    <form class="flex flex-col gap-4 mt-2" @submit.prevent="handleSendChat">
-      <div>
-        <label class="text-sm font-medium text-foreground">Name</label>
-        <input
-          v-model="form.fullName"
-          type="text"
-          required
-          class="mt-1 w-full text-gray-200 rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="Your name"
-        />
-      </div>
-      <div>
-        <label class="text-sm font-medium text-foreground">Email</label>
-        <input
-          v-model="form.email"
-          type="email"
-          required
-          class="mt-1 w-full text-gray-200 rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="you@example.com"
-        />
-      </div>
-      <div>
-        <label class="text-sm font-medium text-foreground">Company</label>
-        <input
-          v-model="form.companyName"
-          type="text"
-          required
-          class="mt-1 w-full text-gray-200 rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="Your company"
-        />
-      </div>
-      <div>
-        <label class="text-sm font-medium text-foreground">Subject</label>
-        <input
-          v-model="form.subject"
-          type="text"
-          required
-          class="mt-1 w-full text-gray-200 rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="What is this about?"
-        />
-      </div>
-      <div>
-        <label class="text-sm font-medium text-foreground">Message</label>
-        <textarea
-          v-model="form.message"
-          rows="3"
-          required
-          class="mt-1 w-full text-gray-200 rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="How can I help you?"
-        ></textarea>
-      </div>
 
-      <p v-if="submitMessage" class="text-center text-sm text-muted-foreground">
-        {{ submitMessage }}
-      </p>
-
-      <button
-        type="submit"
-        :disabled="isSubmitting"
-        class="mt-2 w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-all active:scale-[0.97] disabled:opacity-50"
-      >
-        {{ isSubmitting ? "Sending..." : "Send Message" }}
-      </button>
-    </form>
-
-    <template #footer>
-      <p class="text-center text-xs text-muted-foreground mt-2">
-        Or email me directly at
-        <a
-          href="https://mail.google.com/mail/?view=cm&to=developmentserver160@gmail.com"
-          class="hover:underline font-bold text-gray-200"
-          >developmentserver160@gmail.com</a
-        >
-      </p>
-    </template>
-  </ThreeDrawer>
 </template>
 
 <style>
