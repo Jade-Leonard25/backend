@@ -47,7 +47,7 @@ app.use(
   '/api/*',
   cors({
     // Remove the #contact. Just keep the base URL.
-    origin: ['http://localhost:5173'], 
+    origin: ['http://localhost:5173','https://backend-chn4cca0nvqb.jade-leonard25.deno.net/','https://porfolio-eta-ebon.vercel.app/','https://6ad6fe6a79c054ab1608b970--jade-leonard.netlify.app/'], 
     credentials: true,
     allowHeaders: ['Content-Type', 'Authorization'],
     allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
