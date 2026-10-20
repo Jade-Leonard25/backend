@@ -93,15 +93,19 @@ const initThree = () => {
   const particles = new THREE.Points(geometry, material)
   scene.add(particles)
 
-  const clock = new THREE.Clock()
-  const animate = () => {
-    frameId = requestAnimationFrame(animate)
-    const elapsedTime = clock.getElapsedTime()
-    if (material) material.uniforms.uTime.value = elapsedTime
-    if (material) material.uniforms.uProgress.value += (transitionProgress.value - material.uniforms.uProgress.value) * 0.05
-    if (renderer && scene && camera) renderer.render(scene, camera)
+  const timer = new THREE.Timer()
+const animate = () => {
+  frameId = requestAnimationFrame(animate)
+  timer.update()                          // required every frame
+  const elapsedTime = timer.getElapsed()
+  if (material) {
+    material.uniforms.uTime.value = elapsedTime
+    material.uniforms.uProgress.value +=
+      (transitionProgress.value - material.uniforms.uProgress.value) * 0.05
   }
-  animate()
+  if (renderer && scene && camera) renderer.render(scene, camera)
+}
+animate()
 }
 
 const destroyThree = () => {

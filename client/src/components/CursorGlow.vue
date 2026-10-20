@@ -1,66 +1,69 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
-const glow = ref<HTMLElement | null>(null)
-const core = ref<HTMLElement | null>(null)
-let cleanup: (() => void) | null = null
+const glow = ref<HTMLElement | null>(null);
+const core = ref<HTMLElement | null>(null);
+let cleanup: (() => void) | null = null;
 
 onMounted(() => {
-  const glowEl = glow.value
-  const coreEl = core.value
-  if (!glowEl || !coreEl) return
+  const glowEl = glow.value;
+  const coreEl = core.value;
+  if (!glowEl || !coreEl) return;
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const target = { x: window.innerWidth / 2, y: window.innerHeight / 3 }
+  const target = { x: window.innerWidth / 2, y: window.innerHeight / 3 };
 
   // Two followers: the wide glow lags behind, the small core keeps up.
   // Different lag gives the cursor effect some depth.
   const followers = [
     { el: glowEl, x: target.x, y: target.y, speed: 3 },
     { el: coreEl, x: target.x, y: target.y, speed: 9 },
-  ]
+  ];
 
   const place = (f: (typeof followers)[number]) => {
-    f.el.style.transform = `translate3d(${f.x}px, ${f.y}px, 0) translate(-50%, -50%)`
-  }
-  followers.forEach(place)
+    f.el.style.transform = `translate3d(${f.x}px, ${f.y}px, 0) translate(-50%, -50%)`;
+  };
+  followers.forEach(place);
 
   const onPointerMove = (e: PointerEvent) => {
-    target.x = e.clientX
-    target.y = e.clientY
-  }
-  window.addEventListener('pointermove', onPointerMove, { passive: true })
+    target.x = e.clientX;
+    target.y = e.clientY;
+  };
+  window.addEventListener("pointermove", onPointerMove, { passive: true });
 
-  let frameId = 0
-  let last = performance.now()
+  let frameId = 0;
+  let last = performance.now();
 
   const tick = (now: number) => {
-    frameId = requestAnimationFrame(tick)
-    const dt = Math.min((now - last) / 1000, 0.1)
-    last = now
+    frameId = requestAnimationFrame(tick);
+    const dt = Math.min((now - last) / 1000, 0.1);
+    last = now;
 
     for (const f of followers) {
       // frame-rate independent smoothing; snaps if the user prefers reduced motion
-      const k = reduceMotion ? 1 : 1 - Math.exp(-dt * f.speed)
-      f.x += (target.x - f.x) * k
-      f.y += (target.y - f.y) * k
-      place(f)
+      const k = reduceMotion ? 1 : 1 - Math.exp(-dt * f.speed);
+      f.x += (target.x - f.x) * k;
+      f.y += (target.y - f.y) * k;
+      place(f);
     }
-  }
-  frameId = requestAnimationFrame(tick)
+  };
+  frameId = requestAnimationFrame(tick);
 
   cleanup = () => {
-    cancelAnimationFrame(frameId)
-    window.removeEventListener('pointermove', onPointerMove)
-  }
-})
+    cancelAnimationFrame(frameId);
+    window.removeEventListener("pointermove", onPointerMove);
+  };
+});
 
-onBeforeUnmount(() => cleanup?.())
+onBeforeUnmount(() => cleanup?.());
 </script>
 
 <template>
-  <div class="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#050000]" aria-hidden="true">
+  <div
+    class="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#050000]"
+    aria-hidden="true"
+  >
     <!-- ambient red light that drifts on its own -->
     <div class="blob blob-a" />
     <div class="blob blob-b" />
@@ -69,7 +72,14 @@ onBeforeUnmount(() => cleanup?.())
     <div
       ref="glow"
       class="absolute left-0 top-0 h-[720px] w-[720px] will-change-transform"
-      style="background: radial-gradient(circle, rgba(220, 38, 38, 0.38) 0%, rgba(153, 27, 27, 0.16) 40%, transparent 70%)"
+      style="
+        background: radial-gradient(
+          circle,
+          rgba(220, 38, 38, 0.38) 0%,
+          rgba(153, 27, 27, 0.16) 40%,
+          transparent 70%
+        );
+      "
     />
     <div
       ref="core"
@@ -80,7 +90,9 @@ onBeforeUnmount(() => cleanup?.())
     <!-- vignette keeps the edges black so text stays readable -->
     <div
       class="absolute inset-0"
-      style="background: radial-gradient(ellipse at center, transparent 35%, rgba(0, 0, 0, 0.78) 100%)"
+      style="
+        background: radial-gradient(ellipse at center, transparent 35%, rgba(0, 0, 0, 0.78) 100%);
+      "
     />
   </div>
 </template>

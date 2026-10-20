@@ -1,38 +1,38 @@
 <script lang="ts">
-import { cva } from 'class-variance-authority'
+import { cva } from "class-variance-authority";
 
 export const cardVariants = cva(
-  'bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm',
+  "bg-card text-card-foreground flex flex-col rounded-xl border shadow-sm",
   {
     variants: {
       size: {
-        default: 'gap-6 py-6',
-        sm: 'gap-4 py-4',
+        default: "gap-6 py-6",
+        sm: "gap-4 py-4",
       },
     },
-    defaultVariants: { size: 'default' },
+    defaultVariants: { size: "default" },
   },
-)
+);
 </script>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { cn } from '../lib/utils'
+import { computed } from "vue";
+import { cn } from "../lib/utils";
 
 interface Props {
-  title?: string
-  description?: string
-  size?: 'default' | 'sm'
-  headerClass?: string
-  contentClass?: string
-  footerClass?: string
+  title?: string;
+  description?: string;
+  size?: "default" | "sm";
+  headerClass?: string;
+  contentClass?: string;
+  footerClass?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  size: 'default',
-})
+  size: "default",
+});
 
-const classes = computed(() => cardVariants({ size: props.size }))
+const classes = computed(() => cardVariants({ size: props.size }));
 
 // show the header if any of these are present
 const hasHeader = computed(
@@ -41,7 +41,7 @@ const hasHeader = computed(
     props.description ||
     // slot presence is checked in template via $slots
     false,
-)
+);
 </script>
 
 <template>
@@ -49,11 +49,13 @@ const hasHeader = computed(
     <!-- HEADER -->
     <div
       v-if="hasHeader || $slots.header || $slots.title || $slots.description || $slots.action"
-      :class="cn(
-        'grid auto-rows-min items-start gap-1.5 px-6',
-        $slots.action && 'grid-cols-[1fr_auto]',
-        headerClass,
-      )"
+      :class="
+        cn(
+          'grid auto-rows-min items-start gap-1.5 px-6',
+          $slots.action && 'grid-cols-[1fr_auto]',
+          headerClass,
+        )
+      "
     >
       <!-- full header override -->
       <slot name="header">
@@ -82,10 +84,7 @@ const hasHeader = computed(
     </div>
 
     <!-- FOOTER -->
-    <div
-      v-if="$slots.footer"
-      :class="cn('flex items-center px-6', footerClass)"
-    >
+    <div v-if="$slots.footer" :class="cn('flex items-center px-6', footerClass)">
       <slot name="footer" />
     </div>
   </div>
