@@ -30,7 +30,7 @@ const sendDataSchema = z.object({
 });
 // 3. API URL. Change 4000 to the port your backend prints on startup,
 // or set VITE_API_URL=http://localhost:PORT/api/contact in your frontend .env
-const apiData = "/api/contact"
+const apiData = import.meta.env.VITE_API_URL;
 const apiKey =  import.meta.env.VITE_API_KEY;
 // 4. The Submit Function
 const handleSendChat = async () => {
